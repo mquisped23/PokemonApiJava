@@ -15,7 +15,7 @@
         <h1>Incio</h1>
         
         <form action="RecibirDatos" method="post">
-            <input type="submit" name="name" value="Enviar">
+            <input type="submit" name="siguiente" value="Enviar">
         </form>
     </body>
 </html>

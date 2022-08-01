@@ -53,7 +53,7 @@
                 </li>
                 
                 <li class="page-item">
-                    <a class="page-link" href="RecibirDatos?accion=sumar">Next</a>
+                     <a class="page-link" href="RecibirDatos?siguiente=sumar">Next</a>
                 </li>
             </ul>
         </nav>

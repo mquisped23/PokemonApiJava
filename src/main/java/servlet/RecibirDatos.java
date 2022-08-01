@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package servlet;
 
+import api.PokemonApi;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,18 +26,34 @@ public class RecibirDatos extends HttpServlet {
     int idPokemon;
     String namePokemon;
     String imagen;
-   
+    ArrayList<Pokemon> lista = new ArrayList<Pokemon>();
+    int numero = 9;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-      
-        //Creo una lista para guardar los valores de cada pokemon(id, nombre, iamgen)
-        ArrayList<Pokemon> lista = new ArrayList<Pokemon>();
-        //Creo un for para mostrar solo los 9 primeros pokemones
 
+    }
 
-        
-            for (int i = 1; i <= 9 ; i++) {
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+        String action = request.getParameter("siguiente");
+        if (action.equals("sumar")) {
+            System.out.println("se presiono el boton");
+            lista.clear();
+            //Creo un for para mostrar solo los 9 primeros pokemones
+            for (int i = 1; i <= numero + 5; i++) {
                 CloseableHttpClient client = HttpClientBuilder.create().build();
 
                 CloseableHttpResponse respuesta = client.execute(new HttpGet("https://pokeapi.co/api/v2/pokemon/" + i));
@@ -59,61 +72,30 @@ public class RecibirDatos extends HttpServlet {
                 lista.add(new Pokemon(idPokemon, namePokemon, imagen));
 
             }//fin de for
-        
-    
 
+            request.setAttribute("lista", lista);
+            numero += 9;
+            request.getRequestDispatcher("Pokemones.jsp").forward(request, response);
+        }
 
-        /*  lista.stream().map(poke -> {
-            System.out.println(poke.getIdPokemon());
-              return poke;
-          }).map(poke -> {
-              System.out.println(poke.getNombre());
-              return poke;
-          }).forEachOrdered(poke -> {
-              System.out.println(poke.getUrlImagen());
-          });*/
-        // request.setAttribute("idPokemon", idPokemon);
-        // request.setAttribute("namePokemon", namePokemon);
-        // request.setAttribute("imagenPokemon", imagen);
-        request.setAttribute("lista", lista);
-
-        request.getRequestDispatcher("Pokemones.jsp").forward(request, response);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+
+        String action = request.getParameter("siguiente");
+        if (action.equalsIgnoreCase("Enviar")) {
+            PokemonApi pokemon = new PokemonApi();
+            ArrayList<Pokemon> listita = pokemon.pokemon(9);
+            request.setAttribute("lista", listita);
+
+            request.getRequestDispatcher("Pokemones.jsp").forward(request, response);
+        }
+
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
