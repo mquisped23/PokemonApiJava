@@ -2,9 +2,7 @@ package servlet;
 
 import api.PokemonApi;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +25,7 @@ public class RecibirDatos extends HttpServlet {
     String namePokemon;
     String imagen;
     ArrayList<Pokemon> lista = new ArrayList<Pokemon>();
-    int numero = 9;
+    static int  numero = 9;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -48,12 +46,14 @@ public class RecibirDatos extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        String action = request.getParameter("siguiente");
+        String action = request.getParameter("accion");
         if (action.equals("sumar")) {
             System.out.println("se presiono el boton");
             lista.clear();
             //Creo un for para mostrar solo los 9 primeros pokemones
-            for (int i = 1; i <= numero + 5; i++) {
+            //1 - 9 / 10 - 18 
+            numero += 9;
+            for (int i = numero - 8; i <= numero; i++) {
                 CloseableHttpClient client = HttpClientBuilder.create().build();
 
                 CloseableHttpResponse respuesta = client.execute(new HttpGet("https://pokeapi.co/api/v2/pokemon/" + i));
@@ -74,7 +74,35 @@ public class RecibirDatos extends HttpServlet {
             }//fin de for
 
             request.setAttribute("lista", lista);
-            numero += 9;
+            System.out.println(numero);
+            request.getRequestDispatcher("Pokemones.jsp").forward(request, response);
+        }else if(action.equals("restar")){ //1 - 9 / 10 - 18 / 19 - 27
+                                               //                   -9
+                                            //                 10 <- -8  <- 18
+            lista.clear();
+            numero -= 9;
+            System.out.println(numero);
+            for (int i = (numero -8); i <= numero ; i++) {
+                CloseableHttpClient client = HttpClientBuilder.create().build();
+
+                CloseableHttpResponse respuesta = client.execute(new HttpGet("https://pokeapi.co/api/v2/pokemon/" + i));
+                //Guardo el cuerpo del json en un string
+                String bodyAsString = EntityUtils.toString(respuesta.getEntity());
+                //System.out.println(bodyAsString); 
+
+                //Creo un JSONObject para guardar el archivo json
+                JSONObject pokemon = new JSONObject(bodyAsString);
+                //Obtengo los valores mediante el nombre del json osea sus filas
+                idPokemon = pokemon.getInt("id");
+                namePokemon = pokemon.getString("name");
+                //Asi obtengo el objeto Sprite de el pokeapi
+                JSONObject spritePokemon = pokemon.getJSONObject("sprites");
+                imagen = spritePokemon.getString("front_shiny");
+                lista.add(new Pokemon(idPokemon, namePokemon, imagen));
+
+            }//fin de for
+
+            request.setAttribute("lista", lista);
             request.getRequestDispatcher("Pokemones.jsp").forward(request, response);
         }
 

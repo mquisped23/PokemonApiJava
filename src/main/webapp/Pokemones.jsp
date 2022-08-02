@@ -48,12 +48,12 @@
         
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
+                <li class="page-item">
                     <a class="page-link" href="RecibirDatos?accion=restar" tabindex="-1" aria-disabled="true">Previous</a>
                 </li>
                 
                 <li class="page-item">
-                     <a class="page-link" href="RecibirDatos?siguiente=sumar">Next</a>
+                     <a class="page-link" href="RecibirDatos?accion=sumar">Next</a>
                 </li>
             </ul>
         </nav>
